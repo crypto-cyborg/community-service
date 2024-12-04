@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Persistence.Contexts;
 
-public class CommunityContext : DbContext
+public class CommunityContext(DbContextOptions<CommunityContext> options) 
+    : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
