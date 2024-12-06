@@ -16,7 +16,7 @@ public class RepositoryBase<TEntity>(CommunityContext context) : IRepository<TEn
         await Context.SaveChangesAsync();
     }
 
-    public virtual async Task<IEnumerable<TEntity>> GetAsync(
+    public virtual async Task<IQueryable<TEntity>> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = ""
@@ -32,7 +32,7 @@ public class RepositoryBase<TEntity>(CommunityContext context) : IRepository<TEn
         query = includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
-        return orderBy != null ? await orderBy(query).ToListAsync() : await query.ToListAsync();
+        return orderBy != null ? orderBy(query) : query;
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(object id, string includeProperties = "")

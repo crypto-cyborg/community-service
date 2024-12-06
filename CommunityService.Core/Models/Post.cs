@@ -12,7 +12,7 @@ public class Post
     public DateTimeOffset Time { get; set; } = DateTimeOffset.Now;
     
     public required string Topic { get; set; }
-    public required string Text { get; set; }
+    public required string? Text { get; set; }
 
     public ICollection<Reaction> Reactions { get; set; } = [];
 }

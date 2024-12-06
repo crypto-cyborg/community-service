@@ -1,3 +1,4 @@
+using CommunityService.API.Extensions;
 using CommunityService.Persistence.Contexts;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,9 @@ builder.Services.AddFastEndpoints();
 
 builder.Services.AddDbContext<CommunityContext>(opts =>
     opts.UseInMemoryDatabase("CommunityInMemo"));
+
+builder.Services.AddRepositories();
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
