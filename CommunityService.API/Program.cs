@@ -1,3 +1,4 @@
+using CommunityService.API.Exceptions;
 using CommunityService.API.Extensions;
 using CommunityService.Persistence.Contexts;
 using FastEndpoints;
@@ -6,6 +7,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Logging.AddConsole();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -20,6 +23,8 @@ builder.Services.AddRepositories();
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

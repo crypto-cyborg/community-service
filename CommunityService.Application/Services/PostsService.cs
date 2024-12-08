@@ -13,6 +13,6 @@ public class PostsService(IRepository<Post> postsRepository) : IPostsService
     {
         var posts = await (await postsRepository.GetAsync()).AsNoTracking().ToListAsync();
         
-        return Fin<IEnumerable<PostExtensions.PostReadDto>>.Succ(posts.MapToResponse(true));
+        return Fin<IEnumerable<PostExtensions.PostReadDto>>.Succ(posts.MapToResponse(isPreview: true));
     }
 }
