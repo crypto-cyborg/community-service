@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Application.Services;
 
-public class PostsService(UnitOfWork unitOfWork) : IPostsService
+public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService) : IPostsService
 {
     public async Task<Fin<IEnumerable<PostExtensions.PostReadDto>>> GetAllPosts()
     {
-        var posts = await (await unitOfWork.PostsRepository.GetAsync())
+        var posts = await unitOfWork.PostsRepository.GetAsync()
             .AsNoTracking()
             .ToListAsync();
 
@@ -25,7 +25,8 @@ public class PostsService(UnitOfWork unitOfWork) : IPostsService
 
         if (user is null) return new Fin.Fail<Post>(new UserNotFoundException());
 
-        var post = PostExtensions.Create(dto.UserId, dto.Topic, dto.Text);
+        var tags = await tagsService.EnsureCreated(dto.Tags);
+        var post = PostExtensions.Create(dto.UserId, dto.Topic, dto.Text, tags);
 
         await unitOfWork.PostsRepository.InsertAsync(post);
         user.Posts.Add(post);

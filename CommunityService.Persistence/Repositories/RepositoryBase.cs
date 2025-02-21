@@ -16,7 +16,7 @@ public class RepositoryBase<TEntity>(CommunityContext context) : IRepository<TEn
         await Context.SaveChangesAsync();
     }
 
-    public virtual async Task<IQueryable<TEntity>> GetAsync(
+    public virtual IQueryable<TEntity> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = ""

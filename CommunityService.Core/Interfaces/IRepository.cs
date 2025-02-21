@@ -4,7 +4,7 @@ namespace CommunityService.Core.Interfaces;
 
 public interface IRepository<TEntity>
 {
-    Task<IQueryable<TEntity>> GetAsync(
+    IQueryable<TEntity> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "");

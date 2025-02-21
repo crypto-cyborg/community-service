@@ -1,4 +1,6 @@
-﻿using CommunityService.Persistence.Contexts;
+﻿using CommunityService.Core.Interfaces;
+using CommunityService.Core.Models;
+using CommunityService.Persistence.Contexts;
 using CommunityService.Persistence.Repositories;
 
 namespace CommunityService.Persistence;
@@ -6,14 +8,16 @@ namespace CommunityService.Persistence;
 public class UnitOfWork(
     CommunityContext context,
     PostsRepository postsRepository,
-    UserRepository userRepository) : IDisposable
+    UserRepository userRepository,
+    TagsRepository tagsRepository) : IDisposable
 {
     public int SaveChanges() => context.SaveChanges();
     
     public Task<int> SaveChangesAsync() => context.SaveChangesAsync();
 
-    public PostsRepository PostsRepository { get; init; } = postsRepository;
-    public UserRepository UserRepository { get; init; } = userRepository;
+    public IRepository<Post> PostsRepository { get; } = postsRepository;
+    public IRepository<User> UserRepository { get; } = userRepository;
+    public IRepository<Tag> TagsRepository { get; } = tagsRepository;
     
     public void Dispose()
     {
