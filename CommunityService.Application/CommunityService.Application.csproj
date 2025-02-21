@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommunityService.Core\CommunityService.Core.csproj" />
+    <ProjectReference Include="..\CommunityService.Persistence\CommunityService.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

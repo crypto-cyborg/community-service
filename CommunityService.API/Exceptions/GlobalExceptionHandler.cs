@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using CommunityService.Core.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ internal sealed class GlobalExceptionHandler(IProblemDetailsService pds) : IExce
     {
         httpContext.Response.StatusCode = exception switch
         {
-            ValidationException => StatusCodes.Status403Forbidden,
+            UserNotFoundException => StatusCodes.Status404NotFound,
+            ValidationException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
 

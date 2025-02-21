@@ -13,6 +13,11 @@ public static class PostExtensions
         string? Text,
         IEnumerable<ReactionExtensions.ReactionReadDto>? Reactions);
 
+    public sealed record CreatePostDto(Guid UserId, string Topic, string Text, string[] Tags);
+
+    public static Post Create(Guid userId, string topic, string text, ICollection<Tag>? tags = null) =>
+        new Post { UserId = userId, Topic = topic, Text = text, Tags = tags ?? [] };
+
     public static PostReadDto MapToResponse(this Post post, bool isPreview)
     {
         var text = isPreview ? null : post.Text;

@@ -6,9 +6,9 @@ namespace CommunityService.Persistence.Contexts;
 public class CommunityContext(DbContextOptions<CommunityContext> options) 
     : DbContext(options)
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<Tag> Tags { get; set; }
-    public DbSet<ReactionType> ReactionTypes { get; set; }
-    public DbSet<Reaction> Reactions { get; set; }
+    public DbSet<User> Users { get; init; }
+    public DbSet<Post> Posts { get; init; }
+    public DbSet<Tag> Tags { get; init; }
+    public DbSet<ReactionType> ReactionTypes { get; init; }
+    public DbSet<Reaction> Reactions { get; init; }
 }

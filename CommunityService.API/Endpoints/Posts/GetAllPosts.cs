@@ -1,4 +1,4 @@
-﻿using CommunityService.Core.Extensions;
+﻿using CommunityService.API.Exceptions;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 
@@ -19,7 +19,7 @@ public class GetAllPosts(IPostsService postsService) : EndpointWithoutRequest<IR
 
         return result.Match<IResult>(
             success => TypedResults.Ok(success),
-            error => TypedResults.BadRequest(error)
+            error => TypedResults.Problem(error.ToProblem())
         );
     }
 }
