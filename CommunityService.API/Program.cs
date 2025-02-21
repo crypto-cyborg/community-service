@@ -1,8 +1,7 @@
 using CommunityService.API.Exceptions;
-using CommunityService.API.Extensions;
-using CommunityService.Persistence.Contexts;
+using CommunityService.Application;
+using CommunityService.Persistence;
 using FastEndpoints;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddFastEndpoints();
 
-builder.Services.AddDbContext<CommunityContext>(opts =>
-    opts.UseInMemoryDatabase("CommunityInMemo"));
-
-builder.Services.AddRepositories();
-builder.Services.AddApplicationServices();
+builder.Services.AddPersistence();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
