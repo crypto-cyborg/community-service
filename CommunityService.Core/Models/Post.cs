@@ -1,18 +1,22 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace CommunityService.Core.Models;
 
 public class Post
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
     public required Guid UserId { get; set; }
-    public virtual User User { get; set; } = null!;
 
-    public ICollection<Tag> Tags { get; set; } = [];
+    public IEnumerable<string> Tags { get; set; } = [];
 
     public DateTimeOffset Time { get; set; } = DateTimeOffset.Now;
     
     public required string Topic { get; set; }
     public required string? Text { get; set; }
 
-    public ICollection<Reaction> Reactions { get; set; } = [];
+    public IEnumerable<Reaction> Reactions { get; set; } = [];
 }

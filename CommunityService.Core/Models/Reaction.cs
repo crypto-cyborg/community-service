@@ -7,7 +7,7 @@ public class Reaction
     public required Guid UserId { get; set; }
     public virtual User User { get; set; }
 
-    public required Guid PostId { get; set; }
+    public required string PostId { get; set; }
 
     public required int TypeId { get; set; }
     public virtual ReactionType Type { get; set; }
