@@ -3,4 +3,6 @@ using CommunityService.Persistence.Contexts;
 
 namespace CommunityService.Persistence.Repositories;
 
-public class PostsRepository(ForumContext context) : RepositoryBase<Post, ForumContext>(context) { }
+public class ReactionRepository(CommunityContext context) : RepositoryBase<Reaction, CommunityContext>(context)
+{
+}

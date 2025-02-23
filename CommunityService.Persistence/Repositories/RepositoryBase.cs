@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Persistence.Repositories;
 
-public class RepositoryBase<TEntity>(CommunityContext context) : IRepository<TEntity>
+public class RepositoryBase<TEntity, TContext>(TContext context) : IRepository<TEntity> where TContext : DbContext
     where TEntity : class
 {
-    internal readonly CommunityContext Context = context;
+    internal readonly TContext Context = context;
     internal readonly DbSet<TEntity> DbSet = context.Set<TEntity>();
 
     public async Task SaveChangesAsync()

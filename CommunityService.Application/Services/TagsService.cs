@@ -27,7 +27,7 @@ public class TagsService(UnitOfWork unitOfWork) : ITagsService
             tags.Add(tag);
         }
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveCommunityChangesAsync();
         return tags;
     }
 }

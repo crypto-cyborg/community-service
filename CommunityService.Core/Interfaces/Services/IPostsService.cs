@@ -6,7 +6,7 @@ namespace CommunityService.Core.Interfaces.Services;
 
 public interface IPostsService
 {
-    Fin<IEnumerable<Post>> GetAllPosts();
+    Task<Fin<IEnumerable<Post>>> GetAllPosts();
     Task<Fin<Post>> GetPostById(string id);
     Task<Fin<Post>> CreatePost(PostExtensions.CreatePostDto dto);
 }

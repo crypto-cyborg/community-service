@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Persistence.Repositories;
 
-public class TagsRepository(CommunityContext context): RepositoryBase<Tag>(context)
+public class TagsRepository(CommunityContext context): RepositoryBase<Tag, CommunityContext>(context)
 {
    public override async Task<Tag?> GetByIdAsync(object id, string includeProperties = "")
    {

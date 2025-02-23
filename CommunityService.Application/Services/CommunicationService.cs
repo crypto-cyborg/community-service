@@ -1,13 +1,14 @@
 ﻿using CommunityService.Core.Exceptions;
 using CommunityService.Core.Interfaces.Services;
 using CommunityService.Core.Models;
+using CommunityService.Persistence;
 using CommunityService.Persistence.Contexts;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Application.Services;
 
-public class CommunicationService(ForumContext ctx) : ICommunicationService
+public class CommunicationService(UnitOfWork unitOfWork) : ICommunicationService
 {
     public async Task<Fin<Comment>> CommentPost(string postId, Guid userId, string text)
     {
@@ -18,13 +19,12 @@ public class CommunicationService(ForumContext ctx) : ICommunicationService
             Text = text
         };
 
-        var post = await ctx.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+        var post = await unitOfWork.PostsRepository.GetByIdAsync(postId);
         
         if (post is null) return Fin<Comment>.Fail(new PostNotFoundException());
 
-        ctx.Comments.Add(comment);
-        post.Comments.Add(comment);
-        await ctx.SaveChangesAsync();
+        await unitOfWork.CommentsRepository.InsertAsync(comment);
+        await unitOfWork.SaveForumChangesAsync();
 
         return comment;
     }
@@ -38,12 +38,12 @@ public class CommunicationService(ForumContext ctx) : ICommunicationService
             Text = text
         };
 
-        var comment = await ctx.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+        var comment = await unitOfWork.CommentsRepository.GetByIdAsync(commentId);
 
         if (comment is null) return Fin<Reply>.Fail(new InvalidOperationException("Cannot reply"));
         
         comment.Replies.Add(reply);
-        await ctx.SaveChangesAsync();
+        await unitOfWork.SaveForumChangesAsync();
 
         return reply;
     }

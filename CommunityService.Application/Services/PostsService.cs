@@ -10,21 +10,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Application.Services;
 
-public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, ForumContext fctx, UserService userService)
+public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserService userService)
     : IPostsService
 {
-    public Fin<IEnumerable<Post>> GetAllPosts()
+    public async Task<Fin<IEnumerable<Post>>> GetAllPosts()
     {
-        var posts = fctx.Posts.AsNoTracking().AsEnumerable().ToList();
-
-        // var userIds = posts.Select(p => p.UserId).Distinct().ToList();
-        // var users = userIds.Select(id => unitOfWork.UserRepository.GetByIdAsync(id).GetAwaiter().GetResult());
-        //
-        // var userDict = users.ToDictionary(u => u.Id, u => u);
-
+        var posts = await unitOfWork.PostsRepository.GetAsync().AsNoTracking().ToListAsync();
         foreach (var post in posts)
         {
-            post.Comments = fctx.Comments.Where(c => c.PostId == post.Id).ToList();
+            post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id).ToListAsync();
         }
 
         return Fin<IEnumerable<Post>>.Succ(posts);
@@ -32,7 +26,7 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, Forum
 
     public async Task<Fin<Post>> GetPostById(string id)
     {
-        var post = await fctx.Posts.FirstOrDefaultAsync(p => p.Id == id);
+        var post = await unitOfWork.PostsRepository.GetByIdAsync(id);
 
         return post ?? Fin<Post>.Fail(new PostNotFoundException());
     }
@@ -52,10 +46,10 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, Forum
         var tags = await tagsService.EnsureCreated(dto.Tags);
         var post = PostExtensions.Create(newUser.Id, dto.Topic, dto.Text, dto.Tags);
 
-        await fctx.Posts.AddAsync(post);
-        await fctx.SaveChangesAsync();
+        await unitOfWork.PostsRepository.InsertAsync(post);
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveCommunityChangesAsync();
+        await unitOfWork.SaveForumChangesAsync();
 
         return post;
     }
