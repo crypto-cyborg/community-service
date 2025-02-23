@@ -1,0 +1,15 @@
+﻿syntax = "proto3";
+
+service Users {
+  rpc FindByIdOrSlug(ExistsRequest) returns (ExistsReply);
+}
+
+message ExistsRequest {
+  string IdOrSlug = 1;
+}
+
+message ExistsReply {
+  bool found = 1;
+  string id = 2;
+  string username = 3;
+}

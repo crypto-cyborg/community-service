@@ -9,7 +9,7 @@ public class GetAllPosts(IPostsService postsService) : EndpointWithoutRequest<IR
     public override void Configure()
     {
         Verbs(Http.GET);
-        Routes("posts");
+        Routes("/posts");
         AllowAnonymous();
     }
 

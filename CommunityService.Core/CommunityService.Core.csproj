@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="5.0.0-beta-39" />
+    <PackageReference Include="MongoDB.Bson" Version="3.2.1" />
   </ItemGroup>
 
 </Project>

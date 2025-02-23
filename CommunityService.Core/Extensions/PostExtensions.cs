@@ -5,9 +5,9 @@ namespace CommunityService.Core.Extensions;
 public static class PostExtensions
 {
     public record PostReadDto(
-        Guid Id,
+        string Id,
         UserExtensions.UserReadDto User,
-        IEnumerable<Tag> Tags,
+        IEnumerable<string> Tags,
         DateTimeOffset Time,
         string Topic,
         string? Text,
@@ -15,7 +15,7 @@ public static class PostExtensions
 
     public sealed record CreatePostDto(Guid UserId, string Topic, string Text, string[] Tags);
 
-    public static Post Create(Guid userId, string topic, string text, ICollection<Tag>? tags = null) =>
+    public static Post Create(Guid userId, string topic, string text, IEnumerable<string>? tags = null) =>
         new Post { UserId = userId, Topic = topic, Text = text, Tags = tags ?? [] };
 
     public static PostReadDto MapToResponse(this Post post, bool isPreview)
@@ -23,7 +23,10 @@ public static class PostExtensions
         var text = isPreview ? null : post.Text;
         var reactions = isPreview ? null : post.Reactions;
 
-        return new PostReadDto(post.Id, post.User.MapToResponse(), post.Tags, post.Time, post.Topic, text,
+        // return new PostReadDto(post.Id, post.User.MapToResponse(), post.Tags, post.Time, post.Topic, text,
+        //     reactions?.MapToResponse());
+        return new PostReadDto(post.Id, new UserExtensions.UserReadDto(Guid.NewGuid(), "Test", ""), post.Tags,
+            post.Time, post.Topic, text,
             reactions?.MapToResponse());
     }
 

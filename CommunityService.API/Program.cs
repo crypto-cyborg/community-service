@@ -1,5 +1,6 @@
 using CommunityService.API.Exceptions;
 using CommunityService.Application;
+using CommunityService.Infrastructure;
 using CommunityService.Persistence;
 using FastEndpoints;
 using Scalar.AspNetCore;
@@ -15,7 +16,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddFastEndpoints();
 
-builder.Services.AddPersistence();
+builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
