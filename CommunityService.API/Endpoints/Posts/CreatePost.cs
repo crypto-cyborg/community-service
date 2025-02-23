@@ -5,14 +5,12 @@ using FastEndpoints;
 
 namespace CommunityService.API.Endpoints.Posts;
 
-public class CreatePost(IPostsService postsService)
+public class CreatePost(IPostsService postsService, IPublisherService publisherService)
     : Endpoint<PostExtensions.CreatePostDto, IResult>
 {
     public override void Configure()
     {
-        Verbs(Http.POST);
-        Routes("posts");
-
+        Post("/posts");
         AllowAnonymous();
     }
 
@@ -20,10 +18,11 @@ public class CreatePost(IPostsService postsService)
         PostExtensions.CreatePostDto req,
         CancellationToken ct)
     {
-        var result = await postsService.CreatePost(req);
+        var postResult = await postsService.CreatePost(req);
+        var publisher = await publisherService.GetPublisher(req.UserId);
 
-        return result.Match(
-            succ => Results.Ok(succ.MapToResponse(isPreview: true)),
+        return postResult.Match<IResult>(
+            succ => Results.Ok(succ.MapToResponse(publisher, isPreview: true)),
             err => Results.BadRequest(err.ToProblem()));
     }
 }

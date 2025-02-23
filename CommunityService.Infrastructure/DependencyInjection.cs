@@ -9,7 +9,7 @@ public static class DependencyInjection
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddGrpcClient<Users.UsersClient>(opts =>
-            opts.Address = new Uri(configuration["gRPC:http"]!));
+            opts.Address = new Uri(configuration["GrpcOptions:HttpHost"]!));
 
         services.AddScoped<UserService>();
     }
