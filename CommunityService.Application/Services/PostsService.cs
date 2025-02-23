@@ -22,17 +22,17 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, Forum
         //
         // var userDict = users.ToDictionary(u => u.Id, u => u);
 
+        foreach (var post in posts)
+        {
+            post.Comments = fctx.Comments.Where(c => c.PostId == post.Id).ToList();
+        }
+
         return Fin<IEnumerable<Post>>.Succ(posts);
     }
 
     public async Task<Fin<Post>> GetPostById(string id)
     {
         var post = await fctx.Posts.FirstOrDefaultAsync(p => p.Id == id);
-
-        if (post is null)
-        {
-            return Fin<Post>.Fail(new PostNotFoundException());
-        }
 
         return post ?? Fin<Post>.Fail(new PostNotFoundException());
     }
