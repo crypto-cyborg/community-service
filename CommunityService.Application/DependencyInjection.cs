@@ -11,6 +11,7 @@ public static class DependencyInjection
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IPostsService, PostsService>();
         services.AddScoped<ICommunicationService, CommunicationService>();
+        services.AddScoped<IReactionService, ReactionService>();
         services.AddScoped<ITagsService, TagsService>();
     }
 }

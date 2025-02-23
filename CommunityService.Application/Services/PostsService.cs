@@ -19,6 +19,7 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         foreach (var post in posts)
         {
             post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id).ToListAsync();
+            post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id).ToListAsync();
         }
 
         return Fin<IEnumerable<Post>>.Succ(posts);

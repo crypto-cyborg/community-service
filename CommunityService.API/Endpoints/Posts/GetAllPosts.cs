@@ -15,7 +15,7 @@ public class GetAllPosts(IPostsService postsService) : EndpointWithoutRequest<IR
 
     public override async Task<IResult> ExecuteAsync(CancellationToken ct)
     {
-        var result = postsService.GetAllPosts();
+        var result = await postsService.GetAllPosts();
 
         return result.Match<IResult>(
             success => TypedResults.Ok(success),
