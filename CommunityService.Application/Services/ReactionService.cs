@@ -6,6 +6,7 @@ using CommunityService.Infrastructure.Models;
 using CommunityService.Infrastructure.RabbitMq;
 using CommunityService.Persistence;
 using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Application.Services;
 
@@ -55,5 +56,12 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
         await unitOfWork.SaveCommunityChangesAsync();
 
         return reaction;
+    }
+
+    public async Task<Fin<IEnumerable<ReactionType>>> GetAvailableTypes()
+    {
+        var types = await unitOfWork.ReactionTypesRepository.GetAsync().AsNoTracking().ToListAsync();
+
+        return types;
     }
 }

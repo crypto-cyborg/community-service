@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<TagsRepository>();
         services.AddScoped<ReactionRepository>();
         services.AddScoped<CommentsRepository>();
+        services.AddScoped<ReactionTypesRepository>();
 
         services.AddScoped<UnitOfWork>();
     }

@@ -7,4 +7,5 @@ public interface IReactionService
 {
     Task<Fin<Reaction>> React(string postId, Guid userId, int reactionType);
     Task<Fin<Reaction>> Undo(string postId, Guid userId, int reactionType);
+    Task<Fin<IEnumerable<ReactionType>>> GetAvailableTypes();
 }

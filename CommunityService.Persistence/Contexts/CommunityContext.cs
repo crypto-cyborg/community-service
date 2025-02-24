@@ -16,16 +16,5 @@ public class CommunityContext(DbContextOptions<CommunityContext> options)
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Tag>().HasKey(t => t.Name);
-
-        modelBuilder.Entity<ReactionType>().HasData([
-            new ReactionType
-            {
-                Name = "Like"
-            },
-            new ReactionType
-            {
-                Name = "Dislike"
-            }
-        ]);
     }
 }

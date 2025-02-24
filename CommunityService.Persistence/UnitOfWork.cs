@@ -12,7 +12,8 @@ public class UnitOfWork(
     UserRepository userRepository,
     TagsRepository tagsRepository,
     ReactionRepository reactionRepository,
-    CommentsRepository commentsRepository) : IDisposable
+    CommentsRepository commentsRepository,
+    ReactionTypesRepository reactionTypesRepository) : IDisposable
 {
     public Task<int> SaveCommunityChangesAsync() => communityContext.SaveChangesAsync();
     public Task<int> SaveForumChangesAsync() => forumContext.SaveChangesAsync();
@@ -23,6 +24,7 @@ public class UnitOfWork(
     public IRepository<User> UserRepository { get; } = userRepository;
     public IRepository<Tag> TagsRepository { get; } = tagsRepository;
     public IRepository<Reaction> ReactionRepository { get; } = reactionRepository;
+    public IRepository<ReactionType> ReactionTypesRepository { get; } = reactionTypesRepository;
     
     public void Dispose()
     {
