@@ -2,6 +2,7 @@
 using System.Text.Json;
 using CommunityService.Core.Interfaces.Services;
 using CommunityService.Core.Models;
+using CommunityService.Infrastructure.Models;
 using CommunityService.Infrastructure.RabbitMq;
 using CommunityService.Persistence;
 using LanguageExt;
@@ -25,7 +26,13 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
             TypeId = reactionType
         };
 
-        var json = JsonSerializer.Serialize(reaction);
+        var message = new ReactionMessage
+        {
+            Reaction = reaction,
+            Action = ReactAction.Add
+        };
+
+        var json = JsonSerializer.Serialize(message);
         var bytes = Encoding.UTF8.GetBytes(json);
         await producer.Send("reaction-queue", bytes);
 

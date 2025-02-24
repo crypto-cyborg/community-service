@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityService.Persistence.Contexts;
 
-public class CommunityContext(DbContextOptions<CommunityContext> options) 
+public class CommunityContext(DbContextOptions<CommunityContext> options)
     : DbContext(options)
 {
     public DbSet<User> Users { get; init; }
@@ -14,6 +14,18 @@ public class CommunityContext(DbContextOptions<CommunityContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Tag>().HasKey(t => t.Name);
+
+        modelBuilder.Entity<ReactionType>().HasData([
+            new ReactionType
+            {
+                Name = "Like"
+            },
+            new ReactionType
+            {
+                Name = "Dislike"
+            }
+        ]);
     }
 }
