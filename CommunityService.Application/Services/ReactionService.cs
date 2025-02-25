@@ -20,7 +20,10 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
         var user = await unitOfWork.UserRepository.GetByIdAsync(userId);
         if (user is null) return Fin<Reaction>.Fail("Required user does not exist");
 
-        var reaction = new Reaction
+        var reaction = ReactionExists(postId, userId, reactionType);
+        if (reaction is not null) return Fin<Reaction>.Succ(reaction);
+
+        reaction = new Reaction
         {
             UserId = userId,
             PostId = postId,
@@ -33,9 +36,7 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
             Action = ReactAction.Add
         };
 
-        var json = JsonSerializer.Serialize(message);
-        var bytes = Encoding.UTF8.GetBytes(json);
-        await producer.Send("reaction-queue", bytes);
+        await SendMessage(message);
 
         return reaction;
     }
@@ -43,17 +44,25 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
     public async Task<Fin<Reaction>> Undo(string postId, Guid userId, int reactionType)
     {
         var post = await unitOfWork.PostsRepository.GetByIdAsync(postId);
-        if (post is null) return Fin<Reaction>.Fail("post");
+        if (post is null) return Fin<Reaction>.Fail("Required post does not exist");
 
         var user = await unitOfWork.UserRepository.GetByIdAsync(userId);
-        if (user is null) return Fin<Reaction>.Fail("user");
+        if (user is null) return Fin<Reaction>.Fail("Required user does not exist");
+
+        // TODO: Rewrite repository to auto-include props
+        post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == postId).ToListAsync();
 
         var reaction = post.Reactions.FirstOrDefault(r => r.UserId == userId && r.TypeId == reactionType);
 
-        if (reaction is null) return Fin<Reaction>.Fail("reaction");
+        if (reaction is null) return Fin<Reaction>.Fail("Cannot undo. Reaction is null");
 
-        post.Reactions.Remove(reaction);
-        await unitOfWork.SaveCommunityChangesAsync();
+        var message = new ReactionMessage
+        {
+            Reaction = reaction,
+            Action = ReactAction.Remove
+        };
+
+        await SendMessage(message);
 
         return reaction;
     }
@@ -63,5 +72,18 @@ public class ReactionService(UnitOfWork unitOfWork, Producer producer) : IReacti
         var types = await unitOfWork.ReactionTypesRepository.GetAsync().AsNoTracking().ToListAsync();
 
         return types;
+    }
+
+    private Reaction? ReactionExists(string postId, Guid userId, int reactionTypeId)
+    {
+        return unitOfWork.ReactionRepository.GetAsync(r =>
+            r.PostId == postId && r.UserId == userId && r.TypeId == reactionTypeId).FirstOrDefault();
+    }
+
+    private async Task SendMessage(ReactionMessage message)
+    {
+        var json = JsonSerializer.Serialize(message);
+        var bytes = Encoding.UTF8.GetBytes(json);
+        await producer.Send("reaction-queue", bytes);
     }
 }
