@@ -4,6 +4,7 @@ using CommunityService.Core.Models;
 using CommunityService.Infrastructure.Models;
 using CommunityService.Infrastructure.RabbitMq;
 using CommunityService.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -20,30 +21,38 @@ public class ReactionBackgroundService(IServiceScopeFactory factory, Consumer co
             {
                 await using var scope = factory.CreateAsyncScope();
 
-                var context = scope.ServiceProvider.GetRequiredService<CommunityContext>();
+                var communityContext = scope.ServiceProvider.GetRequiredService<CommunityContext>();
+                var forumContext = scope.ServiceProvider.GetRequiredService<ForumContext>();
 
                 var body = args.Body.ToArray();
                 var json = Encoding.UTF8.GetString(body);
                 var message = JsonSerializer.Deserialize<ReactionMessage>(json) ??
                               throw new Exception("Cannot deserialize");
 
+                var post = await forumContext.Posts.FirstOrDefaultAsync(p => p.Id == message.Reaction.PostId,
+                               stoppingToken)
+                           ?? throw new InvalidOperationException("Cannot find post to react");
+
                 switch (message.Action)
                 {
                     case ReactAction.Add:
                     {
-                        await context.Reactions.AddAsync(message.Reaction, stoppingToken);
+                        await communityContext.Reactions.AddAsync(message.Reaction, stoppingToken);
+                        post.ReactionsCount += 1;
                         break;
                     }
                     case ReactAction.Remove:
                     {
-                        context.Reactions.Remove(message.Reaction);
+                        communityContext.Reactions.Remove(message.Reaction);
+                        post.ReactionsCount -= 1;
                         break;
                     }
                     default:
                         throw new ArgumentOutOfRangeException(message.Action.ToString());
                 }
 
-                await context.SaveChangesAsync(stoppingToken);
+                await communityContext.SaveChangesAsync(stoppingToken);
+                await forumContext.SaveChangesAsync(stoppingToken);
             }
             catch (Exception e)
             {

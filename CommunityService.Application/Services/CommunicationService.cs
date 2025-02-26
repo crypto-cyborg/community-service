@@ -22,8 +22,9 @@ public class CommunicationService(UnitOfWork unitOfWork) : ICommunicationService
         var post = await unitOfWork.PostsRepository.GetByIdAsync(postId);
         
         if (post is null) return Fin<Comment>.Fail(new PostNotFoundException());
-
+        
         await unitOfWork.CommentsRepository.InsertAsync(comment);
+        post.CommentsCount += 1;
         await unitOfWork.SaveForumChangesAsync();
 
         return comment;
@@ -41,6 +42,11 @@ public class CommunicationService(UnitOfWork unitOfWork) : ICommunicationService
         var comment = await unitOfWork.CommentsRepository.GetByIdAsync(commentId);
 
         if (comment is null) return Fin<Reply>.Fail(new InvalidOperationException("Cannot reply"));
+        
+        // TODO: Too many database requests
+        var post = await unitOfWork.PostsRepository.GetAsync(p => p.Id == comment.PostId).FirstOrDefaultAsync()
+            ?? throw new InvalidOperationException("Cannot find required post");
+        post.CommentsCount -= 1;
         
         comment.Replies.Add(reply);
         await unitOfWork.SaveForumChangesAsync();

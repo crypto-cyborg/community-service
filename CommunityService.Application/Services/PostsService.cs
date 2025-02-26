@@ -34,18 +34,23 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
 
     public async Task<Fin<Post>> CreatePost(PostExtensions.CreatePostDto dto)
     {
-        var user = await userService.Exists(dto.UserId.ToString());
+        var userResponse = await userService.Exists(dto.UserId.ToString());
 
-        if (!user.Found)
+        if (!userResponse.Found)
         {
             return Fin<Post>.Fail(new UserNotFoundException($"User {dto.UserId} does not exist"));
         }
 
-        var newUser = new User { Id = new Guid(user.Id), Username = user.Username };
-        await unitOfWork.UserRepository.InsertAsync(newUser);
+        var user = await unitOfWork.UserRepository.GetByIdAsync(dto.UserId);
+
+        if (user is null)
+        {
+            user = new User { Id = new Guid(userResponse.Id), Username = userResponse.Username };
+            await unitOfWork.UserRepository.InsertAsync(user);
+        }
 
         var tags = await tagsService.EnsureCreated(dto.Tags);
-        var post = PostExtensions.Create(newUser.Id, dto.Topic, dto.Text, dto.Tags);
+        var post = PostExtensions.Create(user.Id, dto.Topic, dto.Text, dto.Tags);
 
         await unitOfWork.PostsRepository.InsertAsync(post);
 
