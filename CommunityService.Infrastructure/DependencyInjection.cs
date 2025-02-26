@@ -14,7 +14,13 @@ public static class DependencyInjection
         services.AddGrpcClient<Users.UsersClient>(opts =>
             opts.Address = new Uri(configuration["GrpcOptions:HttpHost"]!));
 
-        services.AddSingleton(new ConnectionFactory { HostName = configuration["RabbitMq:Host"]! });
+        services.AddSingleton(new ConnectionFactory
+        {
+            HostName = configuration["RabbitMq:Host"]!,
+            UserName = configuration["RabbitMq:Username"]!,
+            Password = configuration["RabbitMq:Password"]!,
+            VirtualHost = configuration["RabbitMq:VirtualHost"]!
+        });
         services.AddSingleton<Producer>();
         services.AddSingleton<Consumer>();
         services.AddHostedService<ReactionBackgroundService>();

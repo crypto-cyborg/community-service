@@ -13,7 +13,7 @@ public static class DependencyInjection
     public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<CommunityContext>(opts =>
-            opts.UseNpgsql(configuration.GetConnectionString("default-psql")));
+            opts.UseNpgsql(configuration.GetConnectionString("google-cloud")));
 
         var mongoSettings = configuration.GetSection(MongoDbSettings.Settings).Get<MongoDbSettings>();
         if (mongoSettings is null) throw new MongoConfigurationException("Mongo configuration not found");
