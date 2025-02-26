@@ -16,10 +16,10 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
     public async Task<Fin<IEnumerable<Post>>> GetAllPosts()
     {
         var posts = await unitOfWork.PostsRepository.GetAsync().AsNoTracking().ToListAsync();
+
         foreach (var post in posts)
         {
-            post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id).ToListAsync();
-            post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id).ToListAsync();
+            post.Username = await GetUsername(post.UserId);
         }
 
         return Fin<IEnumerable<Post>>.Succ(posts);
@@ -29,7 +29,15 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
     {
         var post = await unitOfWork.PostsRepository.GetByIdAsync(id);
 
-        return post ?? Fin<Post>.Fail(new PostNotFoundException());
+        if (post is null) return Fin<Post>.Fail(new PostNotFoundException());
+
+        post.Username = await GetUsername(post.UserId);
+        post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id).AsNoTracking()
+            .ToListAsync();
+        post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id).AsNoTracking()
+            .ToListAsync();
+
+        return post;
     }
 
     public async Task<Fin<Post>> CreatePost(PostExtensions.CreatePostDto dto)
@@ -58,5 +66,13 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         await unitOfWork.SaveForumChangesAsync();
 
         return post;
+    }
+
+    private async Task<string> GetUsername(Guid userId)
+    {
+        var user = await unitOfWork.UserRepository.GetAsync(u => u.Id == userId)
+            .FirstOrDefaultAsync();
+
+        return user is null ? "Deleted user" : user.Username;
     }
 }

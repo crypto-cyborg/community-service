@@ -12,7 +12,10 @@ public static class PostExtensions
         DateTimeOffset Time,
         string Topic,
         string? Text,
-        IEnumerable<ReactionExtensions.ReactionReadDto>? Reactions);
+        int ReactionsCount,
+        int CommentsCount,
+        IEnumerable<ReactionExtensions.ReactionReadDto>? Reactions,
+        IEnumerable<Comment> Comments);
 
     public sealed record CreatePostDto(Guid UserId, string Topic, string Text, string[] Tags);
 
@@ -25,7 +28,7 @@ public static class PostExtensions
         var reactions = isPreview ? null : post.Reactions;
 
         return new PostReadDto(post.Id, user.MapToResponse(), post.Tags, post.Time, post.Topic, text,
-            reactions?.MapToResponse());
+            post.ReactionsCount, post.CommentsCount, reactions?.MapToResponse(), post.Comments);
     }
 
     // public static IEnumerable<PostReadDto> MapToResponse(this IEnumerable<Post> posts, bool isPreview) =>

@@ -12,6 +12,7 @@ public class Post
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
     public required Guid UserId { get; set; }
+    public string? Username { get; set; }
 
     public IEnumerable<string> Tags { get; set; } = [];
 
