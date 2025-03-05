@@ -4,7 +4,6 @@ using CommunityService.Core.Interfaces.Services;
 using CommunityService.Core.Models;
 using CommunityService.Infrastructure.ServiceClients;
 using CommunityService.Persistence;
-using CommunityService.Persistence.Contexts;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,6 +62,19 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         await unitOfWork.PostsRepository.InsertAsync(post);
 
         await unitOfWork.SaveCommunityChangesAsync();
+        await unitOfWork.SaveForumChangesAsync();
+
+        return post;
+    }
+
+    public async Task<Fin<Post>> Delete(string postId)
+    {
+        var post = await unitOfWork.PostsRepository.GetByIdAsync(postId);
+
+        if (post is null) return Fin<Post>.Fail(new PostNotFoundException());
+
+        unitOfWork.PostsRepository.Delete(post);
+
         await unitOfWork.SaveForumChangesAsync();
 
         return post;

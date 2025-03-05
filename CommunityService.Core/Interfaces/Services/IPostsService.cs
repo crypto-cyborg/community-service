@@ -9,4 +9,5 @@ public interface IPostsService
     Task<Fin<IEnumerable<Post>>> GetAllPosts();
     Task<Fin<Post>> GetPostById(string id);
     Task<Fin<Post>> CreatePost(PostExtensions.CreatePostDto dto);
+    Task<Fin<Post>> Delete(string postId);
 }
