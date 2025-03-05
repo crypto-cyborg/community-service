@@ -14,7 +14,9 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
 {
     public async Task<Fin<IEnumerable<Post>>> GetAllPosts()
     {
-        var posts = await unitOfWork.PostsRepository.GetAsync().AsNoTracking().ToListAsync();
+        var posts = await unitOfWork.PostsRepository.GetAsync()
+            .AsNoTracking()
+            .ToListAsync();
 
         foreach (var post in posts)
         {
@@ -31,10 +33,13 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         if (post is null) return Fin<Post>.Fail(new PostNotFoundException());
 
         post.Username = await GetUsername(post.UserId);
-        post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id).AsNoTracking()
+        post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id)
+            .AsNoTracking()
             .ToListAsync();
-        post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id).AsNoTracking()
+        post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id)
+            .AsNoTracking()
             .ToListAsync();
+        post.LikesCount = post.Reactions.Count(r => r.TypeId == 1);
 
         return post;
     }

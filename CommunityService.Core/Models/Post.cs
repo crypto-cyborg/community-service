@@ -21,6 +21,7 @@ public class Post
     public required string Topic { get; set; }
     public required string? Text { get; set; }
 
+    public int LikesCount { get; set; }
     public int ReactionsCount { get; set; } = 0;
     public int CommentsCount { get; set; } = 0;
 

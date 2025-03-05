@@ -39,12 +39,14 @@ public class ReactionBackgroundService(IServiceScopeFactory factory, Consumer co
                     {
                         await communityContext.Reactions.AddAsync(message.Reaction, stoppingToken);
                         post.ReactionsCount += 1;
+                        if (message.Reaction.TypeId == 1) post.LikesCount += 1;
                         break;
                     }
                     case ReactAction.Remove:
                     {
                         communityContext.Reactions.Remove(message.Reaction);
                         post.ReactionsCount -= 1;
+                        if (message.Reaction.TypeId == 1) post.LikesCount -= 1;
                         break;
                     }
                     default:
