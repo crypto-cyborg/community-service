@@ -1,14 +1,14 @@
 ﻿using CommunityService.API.Exceptions;
 using CommunityService.API.Extensions;
+using CommunityService.API.Mapping;
 using CommunityService.Application.Interfaces;
 using CommunityService.Application.Models.Requests;
-using CommunityService.Core.Extensions;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 
 namespace CommunityService.API.Endpoints.Posts;
 
-public class CreatePost(IPostsService postsService, IPublisherService publisherService)
+public class CreatePost(IPostsService postsService, IPublisherService publisherService, Mapper mapper)
     : Endpoint<CreatePostRequest, IResult>
 {
     public override void Configure()
@@ -28,7 +28,7 @@ public class CreatePost(IPostsService postsService, IPublisherService publisherS
         var publisher = await publisherService.GetPublisher(userId);
 
         return postResult.Match<IResult>(
-            succ => Results.Ok(succ.MapToResponse(publisher, isPreview: true)),
+            succ => Results.Ok(mapper.PostsMapper.MapToResponse(succ).Result),
             err => Results.BadRequest(err.ToProblem()));
     }
 }

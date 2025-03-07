@@ -1,12 +1,12 @@
-﻿using CommunityService.Application.Interfaces;
-using CommunityService.Core.Extensions;
+﻿using CommunityService.API.Mapping;
+using CommunityService.Application.Interfaces;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 
 namespace CommunityService.API.Endpoints.Posts;
 
-public class GetPostById(IPostsService postsService, IPublisherService publisherService)
-    : Endpoint<PostExtensions.PostReadDto, IResult>
+public class GetPostById(IPostsService postsService, IPublisherService publisherService, Mapper mapper)
+    : EndpointWithoutRequest<IResult>
 {
     public override void Configure()
     {
@@ -14,7 +14,7 @@ public class GetPostById(IPostsService postsService, IPublisherService publisher
         AllowAnonymous();
     }
 
-    public override async Task<IResult> ExecuteAsync(PostExtensions.PostReadDto req, CancellationToken ct)
+    public override async Task<IResult> ExecuteAsync(CancellationToken ct)
     {
         var postId = Route<string>("id");
 
@@ -28,8 +28,7 @@ public class GetPostById(IPostsService postsService, IPublisherService publisher
         return postResult.Match<IResult>(
             Succ: post =>
             {
-                var publisher = publisherService.GetPublisher(post.UserId).GetAwaiter().GetResult();
-                var res = post.MapToResponse(publisher, isPreview: false);
+                var res = mapper.PostsMapper.MapToResponse(post).Result;
 
                 return TypedResults.Ok(res);
             },

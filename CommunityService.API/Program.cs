@@ -1,4 +1,5 @@
 using CommunityService.API.Exceptions;
+using CommunityService.API.Extensions;
 using CommunityService.Application;
 using CommunityService.Infrastructure;
 using CommunityService.Persistence;
@@ -8,13 +9,15 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+// builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Logging.AddConsole();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddFastEndpoints();
+
+builder.Services.AddMapper();
 
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);

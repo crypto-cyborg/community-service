@@ -1,7 +1,6 @@
 ﻿using CommunityService.Application.Interfaces;
 using CommunityService.Application.Models.Requests;
 using CommunityService.Core.Exceptions;
-using CommunityService.Core.Extensions;
 using CommunityService.Core.Interfaces.Services;
 using CommunityService.Core.Models;
 using CommunityService.Infrastructure.ServiceClients;
@@ -35,12 +34,12 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         if (post is null) return Fin<Post>.Fail(new PostNotFoundException());
 
         post.Username = await GetUsername(post.UserId);
-        post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id)
-            .AsNoTracking()
-            .ToListAsync();
-        post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id)
-            .AsNoTracking()
-            .ToListAsync();
+        // post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id)
+        //     .AsNoTracking()
+        //     .ToListAsync();
+        // post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id)
+        //     .AsNoTracking()
+        //     .ToListAsync();
         post.LikesCount = post.Reactions.Count(r => r.TypeId == 1);
 
         return post;
@@ -64,7 +63,8 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         }
 
         var tags = await tagsService.EnsureCreated(dto.Tags);
-        var post = PostExtensions.Create(user.Id, dto.Topic, dto.Text, dto.Tags);
+        var post = new Post
+            { UserId = userId, Topic = dto.Topic, Text = dto.Text, Tags = dto.Tags };
 
         await unitOfWork.PostsRepository.InsertAsync(post);
 

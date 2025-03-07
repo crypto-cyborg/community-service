@@ -1,5 +1,4 @@
 ﻿using CommunityService.Application.Models.Requests;
-using CommunityService.Core.Extensions;
 using CommunityService.Core.Models;
 using LanguageExt;
 
