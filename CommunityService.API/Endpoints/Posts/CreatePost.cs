@@ -1,4 +1,7 @@
 ﻿using CommunityService.API.Exceptions;
+using CommunityService.API.Extensions;
+using CommunityService.Application.Interfaces;
+using CommunityService.Application.Models.Requests;
 using CommunityService.Core.Extensions;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
@@ -6,7 +9,7 @@ using FastEndpoints;
 namespace CommunityService.API.Endpoints.Posts;
 
 public class CreatePost(IPostsService postsService, IPublisherService publisherService)
-    : Endpoint<PostExtensions.CreatePostDto, IResult>
+    : Endpoint<CreatePostRequest, IResult>
 {
     public override void Configure()
     {
@@ -15,11 +18,14 @@ public class CreatePost(IPostsService postsService, IPublisherService publisherS
     }
 
     public override async Task<IResult> ExecuteAsync(
-        PostExtensions.CreatePostDto req,
+        CreatePostRequest req,
         CancellationToken ct)
     {
-        var postResult = await postsService.CreatePost(req);
-        var publisher = await publisherService.GetPublisher(req.UserId);
+        var userId = HttpContext.GetUserId();
+        if (userId == Guid.Empty) return TypedResults.Unauthorized();
+        
+        var postResult = await postsService.CreatePost(userId, req);
+        var publisher = await publisherService.GetPublisher(userId);
 
         return postResult.Match<IResult>(
             succ => Results.Ok(succ.MapToResponse(publisher, isPreview: true)),

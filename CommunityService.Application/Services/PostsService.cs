@@ -1,4 +1,6 @@
-﻿using CommunityService.Core.Exceptions;
+﻿using CommunityService.Application.Interfaces;
+using CommunityService.Application.Models.Requests;
+using CommunityService.Core.Exceptions;
 using CommunityService.Core.Extensions;
 using CommunityService.Core.Interfaces.Services;
 using CommunityService.Core.Models;
@@ -44,16 +46,16 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         return post;
     }
 
-    public async Task<Fin<Post>> CreatePost(PostExtensions.CreatePostDto dto)
+    public async Task<Fin<Post>> CreatePost(Guid userId, CreatePostRequest dto)
     {
-        var userResponse = await userService.Exists(dto.UserId.ToString());
+        var userResponse = await userService.Exists(userId.ToString());
 
         if (!userResponse.Found)
         {
-            return Fin<Post>.Fail(new UserNotFoundException($"User {dto.UserId} does not exist"));
+            return Fin<Post>.Fail(new UserNotFoundException($"User {userId} does not exist"));
         }
 
-        var user = await unitOfWork.UserRepository.GetByIdAsync(dto.UserId);
+        var user = await unitOfWork.UserRepository.GetByIdAsync(userId);
 
         if (user is null)
         {

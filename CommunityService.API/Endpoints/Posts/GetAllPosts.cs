@@ -1,4 +1,5 @@
 ﻿using CommunityService.API.Exceptions;
+using CommunityService.Application.Interfaces;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 

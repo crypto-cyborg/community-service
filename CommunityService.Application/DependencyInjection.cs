@@ -1,4 +1,5 @@
-﻿using CommunityService.Application.Services;
+﻿using CommunityService.Application.Interfaces;
+using CommunityService.Application.Services;
 using CommunityService.Core.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 

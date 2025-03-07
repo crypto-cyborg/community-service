@@ -17,8 +17,6 @@ public static class PostExtensions
         IEnumerable<ReactionExtensions.ReactionReadDto>? Reactions,
         IEnumerable<Comment> Comments);
 
-    public sealed record CreatePostDto(Guid UserId, string Topic, string Text, string[] Tags);
-
     public static Post Create(Guid userId, string topic, string text, IEnumerable<string>? tags = null) =>
         new Post { UserId = userId, Topic = topic, Text = text, Tags = tags ?? [] };
 

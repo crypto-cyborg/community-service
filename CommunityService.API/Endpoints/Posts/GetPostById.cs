@@ -1,4 +1,5 @@
-﻿using CommunityService.Core.Extensions;
+﻿using CommunityService.Application.Interfaces;
+using CommunityService.Core.Extensions;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 
