@@ -1,4 +1,4 @@
 namespace CommunityService.Application.Models.Requests;
 
-public record ReplyRequest(string Text);
+public sealed record ReplyRequest(string Text);
 

@@ -3,7 +3,7 @@ using CommunityService.Core.Models;
 
 namespace CommunityService.Application.Models.Responses;
 
-public record GetPostByIdResponse(
+public sealed record GetPostByIdResponse(
     string Id,
     UserReadDto User,
     IEnumerable<string> Tags,

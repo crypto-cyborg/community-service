@@ -1,6 +1,6 @@
 namespace CommunityService.Application.Models.Dto;
 
-public record CommentReadDto(
+public sealed record CommentReadDto(
     string Id,
     string PostId,
     UserReadDto User,
