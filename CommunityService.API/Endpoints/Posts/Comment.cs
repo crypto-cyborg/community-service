@@ -1,11 +1,11 @@
 ﻿using CommunityService.API.Exceptions;
+using CommunityService.API.Extensions;
+using CommunityService.Application.Models.Requests;
 using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 using MongoDB.Bson;
 
 namespace CommunityService.API.Endpoints.Posts;
-
-public record CommentRequest(Guid UserId, string Text);
 
 public class Comment(ICommunicationService communicationService) : Endpoint<CommentRequest, IResult>
 {
@@ -18,12 +18,15 @@ public class Comment(ICommunicationService communicationService) : Endpoint<Comm
     public override async Task<IResult> ExecuteAsync(CommentRequest req, CancellationToken ct)
     {
         var postId = Route<string>("postId");
+        var userId = HttpContext.GetUserId();
+
+        if (userId == Guid.Empty) return TypedResults.Unauthorized();
 
         var isValidObjectId = ObjectId.TryParse(postId, out _);
 
         if (!isValidObjectId) return TypedResults.Problem("Invalid post id", statusCode: 400);
 
-        var result = await communicationService.CommentPost(postId!, req.UserId, req.Text);
+        var result = await communicationService.CommentPost(postId!, userId, req.Text);
 
         return result.Match<IResult>(
             Succ: comment => TypedResults.Ok(comment),

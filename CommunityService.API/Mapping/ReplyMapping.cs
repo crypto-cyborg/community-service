@@ -1,7 +1,7 @@
 using CommunityService.Application.Models.Dto;
 using CommunityService.Core.Models;
 
-namespace CommunityService.API.Endpoints.Posts;
+namespace CommunityService.API.Mapping;
 
 public static class ReplyMapping
 {
