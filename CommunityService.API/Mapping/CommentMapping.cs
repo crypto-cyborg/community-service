@@ -17,5 +17,5 @@ public class CommentMapping(UnitOfWork unitOfWork)
     }
 
     public async Task<IEnumerable<CommentReadDto>> MapToResponse(IEnumerable<Comment> comments) =>
-        await Task.WhenAll(comments.Select(async c => await MapToResponse(c)));
+        await Task.WhenAll(comments.Select(MapToResponse));
 }

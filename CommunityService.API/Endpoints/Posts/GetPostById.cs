@@ -1,11 +1,10 @@
 ﻿using CommunityService.API.Mapping;
 using CommunityService.Application.Interfaces;
-using CommunityService.Core.Interfaces.Services;
 using FastEndpoints;
 
 namespace CommunityService.API.Endpoints.Posts;
 
-public class GetPostById(IPostsService postsService, IPublisherService publisherService, Mapper mapper)
+public class GetPostById(IPostsService postsService, Mapper mapper)
     : EndpointWithoutRequest<IResult>
 {
     public override void Configure()
@@ -25,13 +24,13 @@ public class GetPostById(IPostsService postsService, IPublisherService publisher
 
         var postResult = await postsService.GetPostById(postId);
 
-        return postResult.Match<IResult>(
-            Succ: post =>
+        return await postResult.Match<Task<IResult>>(
+            Succ: async post =>
             {
-                var res = mapper.PostsMapper.MapToResponse(post).Result;
+                var res = await mapper.PostsMapper.MapToResponse(post);
 
                 return TypedResults.Ok(res);
             },
-            Fail: err => TypedResults.BadRequest(err));
+            Fail: err => Task.FromResult<IResult>(TypedResults.BadRequest(err)));
     }
 }

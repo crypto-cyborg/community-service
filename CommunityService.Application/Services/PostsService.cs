@@ -34,12 +34,7 @@ public class PostsService(UnitOfWork unitOfWork, ITagsService tagsService, UserS
         if (post is null) return Fin<Post>.Fail(new PostNotFoundException());
 
         post.Username = await GetUsername(post.UserId);
-        // post.Reactions = await unitOfWork.ReactionRepository.GetAsync(r => r.PostId == post.Id)
-        //     .AsNoTracking()
-        //     .ToListAsync();
-        // post.Comments = await unitOfWork.CommentsRepository.GetAsync(c => c.PostId == post.Id)
-        //     .AsNoTracking()
-        //     .ToListAsync();
+
         post.LikesCount = post.Reactions.Count(r => r.TypeId == 1);
 
         return post;
